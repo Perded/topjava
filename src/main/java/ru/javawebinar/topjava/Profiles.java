@@ -6,11 +6,31 @@ public class Profiles {
             JPA = "jpa",
             DATAJPA = "datajpa";
 
-    public static final String REPOSITORY_IMPLEMENTATION = DATAJPA;
+    //public static final String REPOSITORY_IMPLEMENTATION = DATAJPA;
 
     public static final String
             POSTGRES_DB = "postgres",
             HSQL_DB = "hsqldb";
+
+    public static String getRepositoryImplementation() {
+        try {
+
+            Class.forName("ru.javawebinar.topjava.repository.datajpa");
+            return DATAJPA;
+        } catch (ClassNotFoundException e) {
+            try {
+                Class.forName("ru.javawebinar.topjava.repository.jpa");
+                return JPA;
+            } catch (ClassNotFoundException ex) {
+                try {
+                    Class.forName("ru.javawebinar.topjava.repository.jdbc");
+                    return JDBC;
+                } catch (ClassNotFoundException exx) {
+                    throw new IllegalStateException("Could not find repository");
+                }
+            }
+        }
+    }
 
     //  Get DB profile depending of DB driver in classpath
     public static String getActiveDbProfile() {

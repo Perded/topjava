@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,10 +16,12 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 public class MealServiceImpl implements MealService {
 
     private final MealRepository repository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public MealServiceImpl(MealRepository repository) {
+    public MealServiceImpl(MealRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -45,12 +48,15 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public void update(Meal meal, int userId) {
+        meal.setUser(userRepository.get(userId));
         Assert.notNull(meal, "meal must not be null");
+        Meal test = repository.save(meal, userId);
         checkNotFoundWithId(repository.save(meal, userId), meal.getId());
     }
 
     @Override
     public Meal create(Meal meal, int userId) {
+        meal.setUser(userRepository.get(userId));
         Assert.notNull(meal, "meal must not be null");
         return repository.save(meal, userId);
     }
